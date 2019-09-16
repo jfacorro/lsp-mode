@@ -38,15 +38,25 @@
   :risky t
   :type 'file)
 
+(defcustom lsp-erlang-config ".lsp-erlang"
+  ""
+  :type 'string)
+
 (defun lsp-erlang-server-start-fun (port)
   `(,lsp-erlang-server-path
     ,(number-to-string port)))
 
+(lsp-register-custom-settings
+ '(("erlang.config" lsp-erlang-config)))
+
 (lsp-register-client
- (make-lsp-client :new-connection (lsp-tcp-connection 'lsp-erlang-server-start-fun)
-                  :major-modes '(erlang-mode)
-                  :priority -1
-                  :server-id 'erlang-ls))
+ (make-lsp-client
+  :new-connection (lsp-tcp-connection 'lsp-erlang-server-start-fun)
+  :major-modes '(erlang-mode)
+  :priority -1
+  :server-id 'erlang-ls
+  :multi-root t
+  :initialization-options (lambda () (lsp-configuration-section "erlang") )))
 
 (provide 'lsp-erlang)
 ;;; lsp-erlang.el ends here
